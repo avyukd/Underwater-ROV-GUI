@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.lang.*;
-
+import java.lang.Math;
 public class TiltSymbol {
 	
 	private Color myColor;
@@ -9,13 +9,13 @@ public class TiltSymbol {
 	private double x1, x2, y1, y2;
 	private int tilt;
 	
-	public TiltSymbol(int myX, int tilt){
+	public TiltSymbol(int myX, int t){
 		myColor = Color.RED;
 		
 		myXwidth = myX;
 		// myXwidth is the diameter
 		
-      tilt  = tilt;
+      tilt  = t;
 	   setCoordinates();
    }
 	public double getX1(){
@@ -42,19 +42,34 @@ public class TiltSymbol {
    }
    public void setTilt(int t){
       tilt =t;
+      setCoordinates();
       // redraw after every set (use set Coordinates)
    }
 	public void draw(Graphics g){
 		g.setColor(myColor);
-      setCoordinates();
+      g.drawOval(myXwidth/2-25,myXwidth/2-25,50,50);
 		g.drawLine((int)getX1(), (int)getY1(), (int)getX2(), (int)getY2());
 	}
 	
 	public void setCoordinates(){
-     x1 = ((double)myXwidth) * (double)Math.sin(90-tilt); 
-     y1 = ((double)myXwidth) * (double)Math.sin(tilt); 
-     x2 = x1 * -1;
-     y2 = x2*-1;
+     double hyp = myXwidth/2;
+     
+     if(Math.floor(tilt) ==0 || Math.floor(tilt) ==180){
+      x1 = myXwidth;
+      y1 = hyp;
+      x2 = 0;
+      y2 = hyp;
+     }else if(Math.floor(tilt) == 90 || Math.floor(tilt) == 270){
+      x1 = hyp;
+      y1= 0;
+      x2 = hyp;
+      y2 = myXwidth;
+     }else{
+      x1= hyp+(hyp*Math.cos(tilt));
+      y1 = hyp-(hyp*Math.sin(tilt));
+      x2 = hyp-(hyp*Math.cos(tilt));
+      y2 = hyp+(hyp*Math.sin(tilt));
+     }
    }
 
 }

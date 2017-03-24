@@ -14,23 +14,21 @@ public class TiltPanel extends JPanel{
 	private Graphics g;
 	private TiltSymbol ts;
    int tilt;
-   Scanner infile;
+   int current = 10;
+   Timer t;
    public TiltPanel(){
-   		try{
-            infile = new Scanner(new File("tilt"));
-         }catch(FileNotFoundException e){
-            System.exit(0);
-         }
-         tilt = infile.nextInt();
+         tilt = 0;
          myImage = new BufferedImage(x,y,BufferedImage.TYPE_INT_RGB);
    	   g = myImage.getGraphics();		
    		
    		g.setColor(BACKGROUND);
    		g.fillRect(0, 0, x, y);
    		ts = new TiltSymbol(x,tilt);
-   		ts.draw(g);
-         Timer t = new Timer(3, new Listener());
-   		
+         ts.draw(g);
+         t = new Timer(500, new Listener());
+         t.start();
+     
+         
    	}
       
       public void paintComponent(Graphics g)
@@ -42,16 +40,13 @@ public class TiltPanel extends JPanel{
 
 		   @Override
 		   public void actionPerformed(ActionEvent arg0) {
-             try{infile = new Scanner(new File("tilt"));}catch(FileNotFoundException e){
-               System.exit(0);
-             }
-             tilt = infile.nextInt();
-             ts.setTilt(tilt);
-             ts.setCoordinates();
+            g.setColor(BACKGROUND);
+      	       g.fillRect(0,0,x,y);
+             ts.setTilt(current);
              ts.draw(g);
-             
              repaint();
-          }
+             
+         }
       }
    
    

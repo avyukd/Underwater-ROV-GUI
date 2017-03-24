@@ -10,18 +10,19 @@ public class SuperPanel extends JPanel{
 	
 	public SuperPanel(){
 		m = new MotorPanel();
-		o = new OrientationPanel();
+		//o = new OrientationPanel();
 		a = new ArmPanel();
 		c =  new CollectorPanel();
 		l = new LightsPanel();
 		
-		setLayout(new GridLayout(5,1));
+		setLayout(new FlowLayout(FlowLayout.LEFT, 15,15));
 		
 		add(m);
-		add(o);
+		//add(o);
 		add(a);
 		add(c);
 		add(l);
+      add(new ShortcutWindow());
 		setForeground(Color.GRAY);
 		
 	}

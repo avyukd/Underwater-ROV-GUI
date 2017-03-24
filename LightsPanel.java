@@ -5,75 +5,52 @@ import java.io.*;
 import java.util.Scanner;
 
 public class LightsPanel extends JPanel{
-   private JButton brighten, darken;
-   int val;
-   private JLabel currentVal;
-   Scanner infile = null;
+   private JButton s1, s2;
    public LightsPanel(){
-            try{
-         infile = new Scanner(new File("lights"));
-      }catch(FileNotFoundException e){
-         System.err.println("File not found!");
-         System.exit(0);
-      } 
-      val = Integer.parseInt(infile.next());
-      brighten = new JButton("Brighten the Lights 10%");
-		darken = new JButton("Darken the Lights 10%");
+      s1 = new JButton("Off");
+		s2 = new JButton("Off");
       setLayout(new FlowLayout());
 		JPanel subpanel = new JPanel();
-		subpanel.setLayout(new GridLayout(1,3));
+		subpanel.setLayout(new GridLayout(2,2,5,5));
       JLabel m = new JLabel("Lights: ");
       Font f = new Font("Calibri", Font.BOLD, 18);
       m.setFont((f));
       m.setForeground(Color.RED);
       add(m);
-      JPanel buttons = new JPanel(new GridLayout(2,1));
-      buttons.add(brighten);
-      buttons.add(darken);
-      add(buttons);
-      currentVal = new JLabel(""+val);
-      currentVal.setFont(f);
-      add(currentVal);
-      
-      brighten.addActionListener(new Listener(true));
-      darken.addActionListener(new Listener(false));
-      
+      subpanel.add(new JLabel("Blue Lights"));
+      subpanel.add(s1);
+      subpanel.add(new JLabel("Normal Lights"));
+      subpanel.add(s2);
+      s1.addActionListener(new Listener(1));
+      s2.addActionListener(new Listener(2));
+      add(subpanel);
 
     
 
 
 }
    public class Listener implements ActionListener {
-      boolean b;
-      public Listener(boolean b){
-         b=b;
+      int i;
+      public Listener(int ii){
+         i = ii;
       }
       
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-         
-         if(b){
-            if(val==100){
-               return;
-            }else{
-               val+=10;
-            }
-            
+        //write to arduino
+        if(i==1){
+         if(s1.getText().equals("On")){
+            s1.setText("Off");
          }else{
-            if(val==0){
-               return;
-            }else{
-               val-=10;
-            }
-         } 
-         try{
-           System.setOut(new PrintStream(new FileOutputStream("lights")));
-         }catch(FileNotFoundException e){
-            System.err.println("File not found!");
-            System.exit(0);
-         } 
-  		   System.out.println(val);
-         currentVal.setText(""+val);
+            s1.setText("On");
+         }
+        }else{
+         if(s2.getText().equals("On")){
+            s2.setText("Off");
+         }else{
+            s2.setText("On");
+         }
+        }   
       }
 	}
 }

@@ -43,12 +43,18 @@ public class MotorPanel extends JPanel{
 		up = new JButton("Lock Up");
 		down = new JButton("Lock Down");
 		
+      forward.addActionListener(new Writer("forward"));
+      backward.addActionListener(new Writer("backward"));
+      up.addActionListener(new Writer("up"));
+      down.addActionListener(new Writer("down"));
+
 		setLayout(new FlowLayout());
 		JPanel subpanel = new JPanel();
 		subpanel.setLayout(new GridLayout(2,1));
 		JPanel eff = new JPanel();
 		eff.setLayout(new GridLayout(2,6));
 		JPanel locks = new JPanel();
+      
 		locks.setLayout(new GridLayout(1,4));
 		JLabel m = new JLabel("Motors: ");
       m.setFont((new Font("Calibri", Font.BOLD, 18)));
@@ -75,36 +81,65 @@ public class MotorPanel extends JPanel{
 
 		setForeground(Color.GRAY);
 		
-      t = new Timer(3,new Listener());
+      t = new Timer(3,new Reader());
 		t.start();
 	}
 	
-   public class Listener implements ActionListener {
+   public class Reader implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-   		Scanner update = null;
-         try{
-            update = new Scanner(new File("e"));
-         }catch(FileNotFoundException e){
-            System.err.println("File not found!");
-            System.exit(0);
-         } 
-         String[] e = new String[6];
-   		for(int i = 0; i < e.length; i++){
-   			e[i] = update.next();
-   		}
-         Font f = new Font("Calibri", Font.ITALIC, 12);
-   		m1.setText(e[0]+"%");
-         m2.setText(e[1]+"%");
-   		m3.setText(e[2]+"%");
-   		m4.setText(e[3]+"%");
-   		m5.setText(e[4]+"%");
-   		m6.setText(e[5]+"%");
-         for(int z = 0; z < 6; z++){
-            if(e[z])
+          // read from arduino serial monitor
+      }
+	}
+   
+   public class Writer implements ActionListener {
+      String t;
+      public Writer(String tt){
+         t = tt;
+      }
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+         boolean isLocked = true;
+         // write to arduino serial monitor
+         if(t.equals("forward")){
+           
+            if(forward.getText().substring(0,1).equals("L")){
+               forward.setText("Unlock Forward");
+               isLocked = false;
+            }else{
+               forward.setText("Lock Forward");
+               isLocked = true;
+            }
+            // print isLocked to serial monitor 
          }
-      
+         if(t.equals("backward")){
+            if(backward.getText().substring(0,1).equals("L")){
+                  backward.setText("Unlock Backward");
+                  isLocked = false;
+               }else{
+                  backward.setText("Lock Backward");
+                  isLocked = true;
+               }
+         }
+         if(t.equals("up")){
+            if(up.getText().substring(0,1).equals("L")){
+                  up.setText("Unlock Up");
+                  isLocked = false;
+               }else{
+                  up.setText("Lock Up");
+                  isLocked = true;
+               }
+         }
+         if(t.equals("down")){
+            if(down.getText().substring(0,1).equals("L")){
+                  down.setText("Unlock Forward");
+                  isLocked = false;
+               }else{
+                  down.setText("Lock Forward");
+                  isLocked = true;
+               }
+         }
       }
 	}
 }
