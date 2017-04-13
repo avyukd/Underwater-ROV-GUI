@@ -1,5 +1,11 @@
 #include <Servo.h>
 Servo servo;
+final int motorHigh = 1740;
+final int motorLow = 1250;
+final int highAmp = 4.04;
+final int lowAmp = 4.09;
+final int stopValue = 1500;
+const int stopAmp = 0.05;
 
 //Comunications
 bool function = true;
@@ -7,13 +13,13 @@ bool function = true;
 const int motorPin1 = 7;
 const int motorPin2 = 8;
 const int motorPin3 = 9;
-const int motorPin4 = 10;
+const int motorPin4 = 10; //backwards
 const int motorPin5 = 11;
 const int motorPin6 = 12;
 //Servo pins
 const int servoPin1 = 2;
 const int servoPin2 = 3;
-const int servoPin3 = 4;
+const int servoPin3 = 4; 
 const int servoPin4 = 5;
 const int ServoPin5 = 6;
 //9 degrees of freedom orientation sensor
@@ -38,7 +44,7 @@ float maxamp = 10.00;
 int MotorE1 = 150;
 int MotorE2 = 150;
 int MotorE3 = 150;
-int MotorE4 = 150;
+int MotorE4 = 150; //backwards
 int MotorE5 = 150;
 int MotorE6 = 150;
 byte ServoL1 = 12;
@@ -157,9 +163,9 @@ void MotorC1() {
 
     delay(1000);// delay to allow the ESC to recognize the stopped signal
 
-    MotorE1 = map(X, 0, 32767, 1230, 1500);
+    MotorE1 = map(X, 0, 32767, stopValue, motorLow);
 
-    float usage = map(MotorE1, 1230, 1500, 4.82, 0.03);
+    float usage = map(MotorE1, motorLow, stopValue, lowAmp, stopAmp);
 
     maxamp = maxamp - usage;
 
@@ -179,11 +185,12 @@ void MotorC1() {
 
     servo.writeMicroseconds(MotorE1 * 10); // send "stop" signal to ESC.
 
+    
     delay(1000);// delay to allow the ESC to recognize the stopped signal
 
-    MotorE1 = map(X, 32767, 65535, 1500, 1760);
+    MotorE1 = map(X, 32767, 65535, 1500, 1730);
 
-    float usage = map(MotorE1, 1500, 1760, 0.03, 4.75);
+    float usage = map(MotorE1, stopValue, motorHigh, stopAmp, highAmp);
 
     maxamp = maxamp - usage;
 
@@ -211,9 +218,9 @@ void MotorC2() {
 
     delay(1000);// delay to allow the ESC to recognize the stopped signal
 
-    MotorE2 = map(X, 0, 32767, 1230, 1500);
+    MotorE2 = map(X, 0, 32767, motorLow, stopValue);
 
-    float usage = map(MotorE1, 1230, 1500, 4.82, 0.03);
+    float usage = map(MotorE1, motorLow, stopValue, lowAmp, stopAmp);
 
     maxamp = maxamp - usage;
 
@@ -239,7 +246,7 @@ void MotorC2() {
 
     MotorE2 = map(X, 32767, 65535, 1500, 1760);
 
-    float usage = map(MotorE2, 1500, 1760, 0.03, 4.75);
+    float usage = map(MotorE2, 1500, 1730, 0.03, 4.75);
 
     maxamp = maxamp - usage;
 
@@ -276,7 +283,7 @@ void MotorC3() {
 
     MotorE3 = map(Y, 0, 32767, 1230, 1500);
 
-    float usage = map(MotorE3, 1230, 1500, 4.82, 0.03);
+    float usage = map(MotorE3, 1240, 1500, 4.82, 0.03);
 
     maxamp = maxamp - usage;
 
@@ -302,7 +309,7 @@ void MotorC3() {
 
     MotorE3 = map(Y, 32767, 65535, 1500, 1760);
 
-    float usage = map(MotorE3, 1500, 1760, 0.03, 4.75);
+    float usage = map(MotorE3, 1500, 1730, 0.03, 4.75);
 
     maxamp = maxamp - usage;
 
@@ -339,7 +346,7 @@ void MotorC4() {
 
     MotorE4 = map(Y, 0, 32767, 1230, 1500);
 
-    float usage = map(MotorE4, 1230, 1500, 4.82, 0.03);
+    float usage = map(MotorE4, 1240, 1500, 4.82, 0.03);
 
     maxamp = maxamp - usage;
 
@@ -365,7 +372,7 @@ void MotorC4() {
 
     MotorE4 = map(Y, 32767, 65535, 1500, 1760);
 
-    float usage = map(MotorE4, 1500, 1760, 0.03, 4.75);
+    float usage = map(MotorE4, 1500, 1730, 0.03, 4.75);
 
     maxamp = maxamp - usage;
 
