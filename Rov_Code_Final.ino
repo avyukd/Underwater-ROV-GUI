@@ -41,12 +41,13 @@ Servo servoPin2; //3
 Servo servoPin3; //4
 Servo agarServo; //3 (less than 90 to colect; 90 is stop value)
 Servo servoPin5; //6
+Servo claw;
 
 Servo LV_motorPin; //7
 Servo LH_motorPin; //8
 Servo RH_motorPin; //9
 Servo RS_motorPin; //10 rear not right
-Servo RV_motorPin; //11 
+Servo RV_motorPin; //11
 Servo FS_motorPin; //12
 
 //9 degrees of freedom orientation sensor
@@ -120,7 +121,7 @@ long sampleRate = 10;
 double setpt, input, output;
 
 void setup() {
-  
+
   //lsm.setupAccel(lsm.LSM9DS0_ACCELRANGE_2G);
 
   //lsm.setupMag(lsm.LSM9DS0_MAGGAIN_2GAUSS);
@@ -142,18 +143,26 @@ void setup() {
     pinMode(i, OUTPUT);
   }
 
- // servoPin1.attach(2);
- // servoPin2.attach(3);
- // servoPin3.attach(4);
- // agarServo.attach(2);
- // servoPin5.attach(6);
-
-  LV_motorPin.attach(7); 
-  LH_motorPin.attach(8); 
-  RH_motorPin.attach(9); 
-  RS_motorPin.attach(10); 
-  RV_motorPin.attach(11); 
-  FS_motorPin.attach(12); 
+  
+  
+  // servoPin1.attach(2);
+  // servoPin2.attach(3);
+   twistarm.attach(4);
+  agarServo.attach(3);
+  //Servo claw;
+  claw.attach(5);
+  // servoPin5.attach(6);
+  
+  twistarm.writeMicroseconds(1500);
+  agarServo.writeMicroseconds(1500);
+  claw.writeMicroseconds(1500);
+  
+  LV_motorPin.attach(7);
+  LH_motorPin.attach(8);
+  RH_motorPin.attach(9);
+  RS_motorPin.attach(10);
+  RV_motorPin.attach(11);
+  FS_motorPin.attach(12);
 
   digitalWrite(ByTy, HIGH);
   delay(200);
@@ -184,16 +193,17 @@ void setup() {
   FS_motorPin.writeMicroseconds(1500);
   delay(100);
 }
-
+  long servo3;
+  long servo4;
 void loop() {
 
   read_GUI();
   if (Control == 0)
   {
     Serial.print("ROV control");
-   // Serial.print(hum);
-   // Serial.print(",");
-   // Serial.print(temp);
+    // Serial.print(hum);
+    // Serial.print(",");
+    // Serial.print(temp);
     Serial.println();
     boolean sw1 = motor1;
     boolean sw2 = motor2;
@@ -201,52 +211,52 @@ void loop() {
     boolean sw4 = motor4;
     boolean sw5 = motor5;
     boolean sw6 = motor6;
-      Lights();
-   // MotorC1();
-   // MotorC2();
-   // MotorC3();
-   // MotorC4();
-  //  MotorC5();
-   // MotorC6();
-    //turn();
+    //Lights();
+    MotorC1();
+     MotorC2();
+     MotorC3();
+     MotorC4();
+      MotorC5();
+     MotorC6();
+    turn();
     if (sw1 != motor1) {
       if (motor1) {
         maxamp -= motorUsage1;
       } else {
         maxamp += motorUsage1;
-        motorUsage1=0;
+        motorUsage1 = 0;
       }
     }
-        if (sw1 != motor2) {
+    if (sw1 != motor2) {
       if (motor2) {
         maxamp -= motorUsage2;
       } else {
         maxamp += motorUsage2;
-        motorUsage2=0;
+        motorUsage2 = 0;
       }
     }
-        if (sw3 != motor3) {
+    if (sw3 != motor3) {
       if (motor3) {
         maxamp -= motorUsage3;
       } else {
         maxamp += motorUsage3;
-        motorUsage3=0;
+        motorUsage3 = 0;
       }
     }
-        if (sw1 != motor4) {
+    if (sw1 != motor4) {
       if (motor4) {
         maxamp -= motorUsage4;
       } else {
         maxamp += motorUsage4;
-        motorUsage4=0;
+        motorUsage4 = 0;
       }
     }
-        if (sw5 != motor5) {
+    if (sw5 != motor5) {
       if (motor5) {
         maxamp -= motorUsage5;
       } else {
         maxamp += motorUsage5;
-        motorUsage5=0;
+        motorUsage5 = 0;
       }
     }
 
@@ -255,7 +265,7 @@ void loop() {
         maxamp -= motorUsage6;
       } else {
         maxamp += motorUsage6;
-        motorUsage6=0;
+        motorUsage6 = 0;
       }
     }
   }
@@ -263,11 +273,11 @@ void loop() {
     Serial.println("Tool control");
     Serial.println("!O txtSW0=Auger"); //Rename Switch 1
     Serial.println();
-       Lights();
-    // ServoC1();
-    // ServoC2();
-    // ServoC3();
-    // ServoC4();
+    Lights();
+    //ServoC1();
+    //ServoC2(servo3);
+    //ServoC3(servo4);
+    ServoC4(Vertical);
     // ServoC5();
   }
   Serial.print(maxamp);
@@ -288,7 +298,7 @@ void loop() {
   Serial.print("Z: "); Serial.println((int)lsm.gyroData.z);      Serial.println(" ");
   Serial.print("Temp: "); Serial.print((int)lsm.temperature);    Serial.println(" ");
   delay(200);
-}*/
+  }*/
 
 void read_GUI()
 {
@@ -297,9 +307,8 @@ void read_GUI()
   long x2;
   long strafe;
   long servo1;
-  long servo2; 
-  long servo3;
-  long servo4;
+  long servo2;
+
   long servo5;
   long Lights;
   flushBuffer();
@@ -323,13 +332,13 @@ void read_GUI()
   flushBuffer();
   Serial.println("!READ (SW1)");
   Lights = Serial.parseInt();
-  if (Lights == 0){
+  if (Lights == 0) {
     lights = false;
   }
   else {
     lights = true;
   }
-  flush
+  //flush; //**Broken
   flushBuffer();
   Serial.println("!READ (gamepad.curX)"); // read 0 to 65535 for joystick X position, 32767 center
   X = Serial.parseInt();
@@ -353,8 +362,8 @@ void flushBuffer()
     Serial.read();
 }
 
-void Lights(){
-  if (lights == false){
+void Lights() {
+  if (lights == false) {
     digitalWrite(LedRelay1, LOW);
     digitalWrite(LedRelay2, LOW);
   }
@@ -366,32 +375,26 @@ void Lights(){
 int PIDdepth() {
   Serial.println("!READ (gamepad.curY)");
   long  curY = Serial.parseInt();
-//  setpt = map(altitude(pressure_abs , pressure_baseline), 0, 1024, 0, 255);
+  //  setpt = map(altitude(pressure_abs , pressure_baseline), 0, 1024, 0, 255);
   Input = map(curY, 0, 65355, 0, 255);
   myPID.Compute();
   Serial.println(Output);
   return Serial.parseInt();
 }
 void turn() {
-  if (Strafe == 270) {
-    long x = X;
-    X = 0;
-    MotorC3();
-    X = 65355;
-    MotorC4();
-    X = x;
+  long dir = Strafe;
+  if(dir!=500){
+    RS_motorPin.writeMicroseconds(1500);
+    delay(10);
+    FS_motorPin.writeMicroseconds(1500);
+    delay(10);
+    long signal = 1100;
+    FS_motorPin.writeMicroseconds(signal);
+    signal = 1900;
+    RS_motorPin.writeMicroseconds(signal);
+      
   }
-  else if (Strafe == 90) {
-    long x = X;
-    X = 65355;
-    MotorC3();
-    X = 0;
-    MotorC4();
-    X = x;
-  }
-  else {
-
-  }
+   
 }
 void MotorC1() {
   long directional = X;
@@ -514,7 +517,7 @@ void MotorC2() {
   }
 }
 
-void MotorC3() { 
+void MotorC3() {
   long directional = Y;
   if (directional > 32768) {
 
@@ -567,55 +570,54 @@ void MotorC3() {
 
 void MotorC4() {
   long directional = Y;
+  int sub=150;
   if (directional > 32768) {
 
-    RH_motorPin.writeMicroseconds(MotorE4  ); // send "stop" signal to ESC.
+
+    RH_motorPin.writeMicroseconds(MotorE3  ); // send "stop" signal to ESC.
 
     delay(10);// delay to allow the ESC to recognize the stopped signal
 
-    MotorE4 = map(Y, 0, 32767, motorLow, stopValue);
+    MotorE3 = map(Y, 0, 32767, motorLow, stopValue)-sub;
 
-    float usage = map(MotorE4, motorLow, stopValue, lowAmp, stopAmp);
+    float usage = map(MotorE3, motorLow, stopValue, lowAmp, stopAmp);
 
     usage = abs(usage);
 
-    motorUsage4 = usage;
+    motorUsage3 = usage;
 
-    long signal = MotorE4; // Set signal value, which should be between 1100 and 1900
+    long signal = MotorE3; // Set signal value, which should be between 1100 and 1900
 
     RH_motorPin.writeMicroseconds(signal); // Send signal to ESC.
 
-    MotorE2 = 1500;
-
+    MotorE3 = 1500;
   }
 
   else if (directional < 32766) {
 
-
-
-    RH_motorPin.writeMicroseconds(MotorE4  ); // send "stop" signal to ESC.
+    RH_motorPin.writeMicroseconds(MotorE3  ); // send "stop" signal to ESC.
 
     delay(10);// delay to allow the ESC to recognize the stopped signal
 
-    MotorE4 = map(Y, 32767, 65535, stopValue, motorHigh);
+    MotorE3 = map(Y, 32767, 65535, stopValue, motorHigh)+sub;
 
-    float usage = map(MotorE4, stopValue, motorHigh, stopAmp, highAmp);
+    float usage = map(MotorE3, stopValue, motorHigh, stopAmp, highAmp);
 
     usage = abs(usage);
 
-    motorUsage4 = usage;
+    motorUsage3 = usage;
 
-    long signal = 1300; // Set signal value, which should be between 1100 and 1900
+    long signal = MotorE3; // Set signal value, which should be between 1100 and 1900
 
     RH_motorPin.writeMicroseconds(signal); // Send signal to ESC.
 
-    MotorE4 = 1500;
-
+    MotorE3 = 1500;
   }
 
   else {
     RH_motorPin.writeMicroseconds(1500);
   }
+
 
 }
 
@@ -690,56 +692,57 @@ void MotorC6() {
   }
 }
 
-void ServoC1() {
+/*void ServoC1() { 
   long directional = Y;
-    delay(10);// delay to allow the ESC to recognize the stopped signal
+  delay(10);// delay to allow the ESC to recognize the stopped signal
 
-    float s1 = map(Y, 0, 32767, 0, 180);
+  float s1 = map(Y, 0, 32767, 0, 180);
 
-    long signal = s1; // Set signal value, which should be between 1100 and 1900
+  long signal = s1; // Set signal value, which should be between 1100 and 1900
 
-    s1 = 90;
-  
-}
+  s1 = 90;
 
-void ServoC2() {
-   long directional = X;
-    delay(10);// delay to allow the ESC to recognize the stopped signal
+}*/
 
-    float s1 = map(X, 0, 32767, 0, 180);
+void ServoC2(int directional) { // claw
 
-    long signal = s1; // Set signal value, which should be between 1100 and 1900
+  if(directional == 1){
+    for(int i = 0; i < 3000; i++){
+      claw.writeMicroseconds(750);}
+    for(int j = 0; j < 3000; j++){
+      claw.writeMicroseconds(2250); }   
+  }
 
-    s1 = 90;
-  
 }
 
 void ServoC3(int directional) {
-
+  
   if (directional == 1) {
-    servoPin3.write(0);
-  }
-  else if (directional == 2) {
-    servoPin3.write(180);
-  }
-  else if (directional == 3) {
-    servoPin3.write(90);
-  }
-  else {
-    Serial.println("Error 11");
+    //twistarm.write(180);
+    for(int i = 0 ; i<3000; i++){
+        twistarm.writeMicroseconds(1900);
+    }
   }
 }
 
 void ServoC4(int directional) {
-  if(directional==1){
-    agarServo.write(180);
-    agarServo.writeMicroseconds(1800);
-    agarServo.write(0);
-    agarServo.write(1800);
+  
+  if (! (directional > 25000 && directional < 35000)) {
+    
+    for(int i = 0; i < 2250; i+=50){
+        agarServo.write(i);
+        Serial.println(i);
+        delay(500);
+    }
+    
+    //for(int i = 0 ; i < 3000; i++){
+      //agarServo.writeMicroseconds(750);
+    //}
+    
   }
 }
 
-void ServoC5(int directional) {
+/*void ServoC5(int directional) {
   if (directional == 1) {
     servoPin5.write(0);
   }
@@ -755,7 +758,7 @@ void ServoC5(int directional) {
 
   }
 }
-
+*/
 double sealevel(double P, double A)
 // Given a pressure P (mbar) taken at a specific altitude (meters),
 // return the equivalent pressure (mbar) at sea level.
